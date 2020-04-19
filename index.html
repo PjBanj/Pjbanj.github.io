@@ -46,7 +46,6 @@ main {
 aside {
 	grid-area: side;
 	margin-right: 0.75rem;
-	height: 100vh;
 }
 
 .box {
@@ -146,8 +145,6 @@ select{
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.bundle.min.js"></script>
 <script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/fetch/3.0.0/fetch.js"></script>
-<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-<script src="https://d3js.org/d3-collection.v1.min.js"></script>
 
 <div class = "container">
 	<header><div class="text-center">
@@ -157,7 +154,8 @@ select{
 	</header>
 	
 	<main>
- 
+
+		<!-- <!-- style="display: flex; flex-direction: row; justify-content: center; align-items: center" --> 
 		<div class="col-xs-12" >
 			<div style="height: 300px; width: 45%;display:inline-block;">
 				<canvas id="CoronaChartCountryCases"> </canvas> 
@@ -168,23 +166,49 @@ select{
 		</div> 
 
 
+			<!-- <div id="CoronaChartCountryCases" style="height: 360px; width: 45%;display:inline-block;"></div> -->
+			<!-- <div id="CoronaChartCountryDeaths" style="height: 360px; width: 45%;margin-left:5%;display:inline-block;"></div> -->
+
+
+		<div class = "row"> </div>
+
 		<div class="col-xs-12" style="display: flex; flex-direction: row; justify-content: center; align-items: center">
+			<!-- <label for="state" align="center">Enter State spelled exactly: </label> -->
+			<!-- <input align="center" style="margin: 20px; padding: 5px" type="text" name="state" id="state"><br></input> -->
 			<label for="state">State</label>
 			<select id="state" name="state"><option value="Alabama">Alabama</option><option value="Alaska">Alaska</option><option value="Arizona">Arizona</option><option value="Arkansas">Arkansas</option><option value="California">California</option><option value="Colorado">Colorado</option><option value="Connecticut">Connecticut</option><option value="Delaware">Delaware</option><option value="District of Columbia">District of Columbia</option><option value="Florida">Florida</option><option value="Georgia">Georgia</option><option value="Guam">Guam</option><option value="Hawaii">Hawaii</option><option value="Idaho">Idaho</option><option value="Illinois">Illinois</option><option value="Indiana">Indiana</option><option value="Iowa">Iowa</option><option value="Kansas">Kansas</option><option value="Kentucky">Kentucky</option><option value="Louisiana">Louisiana</option><option value="Maine">Maine</option><option value="Maryland">Maryland</option><option value="Massachusetts">Massachusetts</option><option value="Michigan">Michigan</option><option value="Minnesota">Minnesota</option><option value="Mississippi">Mississippi</option><option value="Missouri">Missouri</option><option value="Montana">Montana</option><option value="Nebraska">Nebraska</option><option value="Nevada">Nevada</option><option value="New Hampshire">New Hampshire</option><option value="New Jersey">New Jersey</option><option value="New Mexico">New Mexico</option><option value="New York">New York</option><option value="North Carolina">North Carolina</option><option value="North Dakota">North Dakota</option><option value="Northern Marianas Islands">Northern Marianas Islands</option><option value="Ohio">Ohio</option><option value="Oklahoma">Oklahoma</option><option value="Oregon">Oregon</option><option value="Pennsylvania">Pennsylvania</option><option value="Puerto Rico">Puerto Rico</option><option value="Rhode Island">Rhode Island</option><option value="South Carolina">South Carolina</option><option value="South Dakota">South Dakota</option><option value="Tennessee">Tennessee</option><option value="Texas">Texas</option><option value="Utah">Utah</option><option value="Vermont">Vermont</option><option value="Virginia">Virginia</option><option value="Virgin Islands">Virgin Islands</option><option value="Washington">Washington</option><option value="West Virginia">West Virginia</option><option value="Wisconsin">Wisconsin</option><option value="Wyoming">Wyoming</option></select>
 			<button class="button" align="center" style="margin: 20px; padding: 5px" onclick="chartStateCases(document.getElementById('state').value)">Display State Data</button>
 		</div>
 
-		<div class="col-xs-12" >
+	<!-- <div class="container"> -->
+	  <!-- <div class="row"> -->
+		<!-- <div class="col-xs-6" class="text-center"> -->
+		  <!-- <canvas id="CoronaChartCTCases" width="400" height="400"></canvas> -->
+		<!-- </div> -->
+		<!-- <div class="col-xs-6" class="text-center"> -->
+		  <!-- <canvas id="CoronaChartCTDeaths" width="400" height="400"></canvas> -->
+		<!-- </div> -->
+	  <!-- </div> -->
+	  <!-- <canvas id="canvas"></canvas> -->
+	<!-- </div> -->
+
+	<!-- <div class="col-xs-12" style="display: flex; flex-direction: row; justify-content: center; align-items: center"> -->
+		<!-- <div> -->
+			<!-- <canvas id="CoronaChartCTCases" style="padding: 10px"></canvas> -->
+		<!-- </div> -->
+		<!-- <div> -->
+			<!-- <canvas id="CoronaChartCTDeaths" style="padding: 10px"></canvas> -->
+		<!-- </div> -->
+	<!-- </div>  -->
+
+			<div class="col-xs-12" >
 				<div style="height: 300px; width: 45%;display:inline-block;"></> 
 					<canvas id="CoronaChartCTCases"> </canvas> 
 				</div>
 				<div style="height: 300px; width: 45%;display:inline-block;"> 
 					<canvas id="CoronaChartCTDeaths" ></canvas>
 				</div>
-		</div>
-		
-		<div id="regions_div"  class="col-xs-12" style="width: 900px; height: 500px;"></div>
-		
+			</div> 
 	</main>
 	<aside>
 		<div class = "box">
@@ -210,6 +234,8 @@ select{
 				<p id = "deathstate"> </p>
 				<!-- <p id = "state"> : </p> -->
 			</div>
+			
+			
 		<div>
 	</aside>
 </div>
@@ -224,59 +250,6 @@ select{
 	var countryDeaths=[];
 	var countryDays=[];
 	var state = "Alabama";
-
-	google.charts.load('current', {
-        'packages':['geochart'],
-        // Note: you will need to get a mapsApiKey for your project.
-        // See: https://developers.google.com/chart/interactive/docs/basic_load_libs#load-settings
-        'mapsApiKey': 'AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY'
-      });
-      google.charts.setOnLoadCallback(drawRegionsMap);
-
-      function drawRegionsMap() {
-        var data = google.visualization.arrayToDataTable([
-        ['State', 'Select'],
-          ['US-AL', 0],
-          ['US-AK', 0],
-          ['US-AR', 0],
-          ['US-AK', 0],
-          ['US-AZ', 0],
-          ['US-Colorado', 0],
-          ['US-CO', 0],
-          ['US-DE', 0],
-          ['US-FL', 0],
-          ['US-HI', 0],
-          ['US-KS', 0],
-          ['US-KY', 0],
-          ['US-MI', 0],
-          ['US-MO', 0],
-          ['US-MS', 0],
-          ['US-MT', 0],
-          ['US-NE', 0],
-          ['US-NJ', 0],
-          ['US-NM', 0],
-          ['US-NY', 1500],
-          ['US-OR', 0],
-          ['US-PA', 0],
-          ['US-TX', 0],
-          ['US-UT', 0],
-          ['US-VA', 0],
-          ['US-WA', 0],
-          ['US-WV', 0],
-          ['US-WY', 0],
-       ]);
-
-        var options = {
-          region: 'US',
-      		displayMode: 'regions',
-			resolution: 'provinces', 
-			backgroundColor: '#BEBEBE',
-        };
-
-        var chart = new google.visualization.GeoChart(document.getElementById('regions_div'));
-
-        chart.draw(data, options);
-      }
 	
 	<!-- getCountryData(); -->
 	window.onload = function () {
@@ -305,7 +278,7 @@ select{
 	function chartItCountryCases() {
 		var ctx = document.getElementById('CoronaChartCountryCases').getContext('2d');
 		var myChart = new Chart(ctx, {
-			type: 'line',
+			type: 'bar',
 			data: {
 				labels: xlabels,
 				datasets: [{
@@ -344,14 +317,13 @@ select{
 				    }
 			}
 		});
-		
-		myChart.update();
+		myChart.render();
 	}
 	
 	function chartItCountryDeaths() {
 		var ctx = document.getElementById('CoronaChartCountryDeaths').getContext('2d');
 		var myChart = new Chart(ctx, {
-			type: 'line',
+			type: 'bar',
 			data: {
 				labels: xlabels,
 				datasets: [{
@@ -390,13 +362,13 @@ select{
 			}
 		});
 		
-		myChart.update();
+		myChart.render();
 	}
 
 	function chartItCTCases(cases, days) {
 		var ctx = document.getElementById('CoronaChartCTCases').getContext('2d');
 		var myChart = new Chart(ctx, {
-			type: 'line',
+			type: 'bar',
 			data: {
 				labels: days,
 				datasets: [{
@@ -435,13 +407,13 @@ select{
 			}
 		});
 		
-		myChart.update();
+		myChart.render();
 	}
 
 	function chartItCTDeaths(deaths, days) {
 		var ctx = document.getElementById('CoronaChartCTDeaths').getContext('2d');
 		var myChart = new Chart(ctx, {
-			type: 'line',
+			type: 'bar',
 			data: {
 			labels: days,
 			datasets: [{
@@ -479,12 +451,8 @@ select{
 						}
 			}
 		});
-
-		myChart.update();
-	}
-
-	function printJSON (obj){
-		console.log(JSON.parse(obj));
+		
+		myChart.render();
 	}
 
 	function getData(state) { 
@@ -498,15 +466,6 @@ select{
 		.then((data) => {
 			const table = data.split('\n').slice(1);
 			curDay = 0;
-			printJSON(csvJSON(table));
-			var subSet = d3.nest()
-  				.key(function(d) { return d.date; })
-  				.rollup(function(v) { return d3.sum(v, function(d) { return d.cases; }); })
-				  .entries(table);
-			subSet.forEach((row => {
-					console.log(row.value);
-				}
-				));
 			table.forEach((row) => { 
 				const columns = row.split(','); 
 				if(columns[1]==state) {
@@ -515,43 +474,49 @@ select{
 					days.push(curDay++);
 				}	
 			});
-
-			
-
 			chartItCTCases(cases, days);
 			chartItCTDeaths(deaths, days);
 			loadSidePanel();
 		})
-
-	function csvJSON(lines){
-
-		var result = [];
-
-			// NOTE: If your columns contain commas in their values, you'll need
-			// to deal with those before doing the next step 
-			// (you might convert them to &&& or something, then covert them back later)
-			// jsfiddle showing the issue https://jsfiddle.net/
-		var headers=lines[0].split(",");
-
-			for(var i=1;i<lines.length;i++){
-
-				var obj = {};
-				var currentline=lines[i].split(",");
-
-				for(var j=0;j<headers.length;j++){
-					obj[headers[j]] = currentline[j];
-				}
-
-				result.push(obj);
-
-			}
-			//return result; //JavaScript object
-			return JSON.stringify(result); //JSON
-		}
-	
+		
 	}
 	
-
+	<!-- function getCountryData() {  -->
+		<!-- countryCases=[]; -->
+		<!-- countryDeaths=[]; -->
+		<!-- countryDays=[]; -->
+		<!-- fetch('https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv') -->
+		<!-- .then((response) => { -->
+			<!-- return response.text();  -->
+		<!-- }) -->
+		<!-- .then((data) => { -->
+			<!-- const table = data.split('\n').slice(1); -->
+			<!-- var cases=0; -->
+			<!-- var deaths=0; -->
+			<!-- var curDay = 0; -->
+			<!-- table.forEach((row) => {  -->
+				<!-- const columns = row.split(','); -->
+				<!-- idx = row.index; -->
+				<!-- debugger; -->
+				<!-- var nextRow = row.parentNode.rows[++idx]; -->
+				<!-- debugger; -->
+				<!-- console.log(nextRow); -->
+				<!-- debugger; -->
+				<!-- var nextColumns = nextRow.split(','); -->
+				<!-- while(columns[0] != nextColumns.[0] && nextRow != null) { -->
+					<!-- cases+=columns[3]; -->
+					<!-- deaths+=coulmns[4]; -->
+					<!-- if(columns[0] != nextColumns.[0]){ -->
+						<!-- countryCases.push(cases); -->
+						<!-- contrydeaths.push(deaths); -->
+						<!-- curDay++; -->
+						<!-- countryDays.push(curDay++); -->
+					<!-- } -->
+					
+				<!-- } -->
+			<!-- }); -->
+		<!-- }); -->
+	<!-- } -->
 </script>
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
