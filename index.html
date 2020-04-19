@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!-- <link rel="stylesheet" href="style.css"> -->
+<style>
+
+ html, body {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+.sidePanel {
+    font-family: 'Stylish';
+	font-size: 22px;
+	background-color: #f44336;
+	color: white;
+	padding: 8px;
+	display:inline-block;
+}
+.container {
+	display: grid;
+	
+	grid-template-areas:
+	"header header header"
+	"content content side"
+	"content content side";
+	
+	grid-template-columns: 200px 1fr 200;
+	grid-template-rows: auto 1 fr auto;
+	grid-gap: 10px;
+	
+	height: 100vh;
+}
+
+header {
+	grid-area: header;
+	margin-top: 0.5rem;
+}
+
+main {
+	grid-area: content;
+}
+
+aside {
+	grid-area: side;
+	margin-right: 0.75rem;
+	height: 100vh;
+}
+
+.box {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-direction: column;
+	text-align: center;
+	height: 100%;
+}
+
+.content {
+    width: 100%;
+    margin: 0 auto;
+    position: relative;
+    z-index: 100;
+    top: 85%;
+	right:15%;
+}
+
+
+
+.chart-container-double {
+  display: inline-block;
+  position: relative;
+  margin: auto;
+  height: 20vh;
+  width: 40vw;
+  border-size: 2px;
+  border-style: solid;
+  border-color: black;
+}
+
+label{
+	color:black;
+	padding:.5em;
+	font-family:helvetica,sans-serif;
+	font-weight:bold;
+	font-size:138%;webkit-border-radius:6px;
+	-moz-border-radius:6px;
+	border-radius:6px
+}
+
+select{
+	background-color:#eee;
+	font-size:108%;
+	width:300px;
+	height:36px;
+	border:1px solid #ccc;
+	webkit-border-radius:6px;
+	-moz-border-radius:6px;
+	border-radius:6px
+}
+.inBlock {
+		display: inline-block;
+	}
+#canvas-holder {
+        background-color: #FFFFFF;
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        right: 8px;
+        bottom: 8px;
+}
+
+.button {
+  display: inline-block;
+  padding: 15px 25px;
+  font-size: 24px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: #fff;
+  background-color: #4CAF50;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 9px #999;
+}
+
+.button:hover {background-color: #3e8e41}
+</style>
+
+<meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+	
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	
+<title>Corona Virus</title>
+
+</head>
+<body style = "background-color: rgb(190,190,190);">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.bundle.min.js"></script>
+<script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/fetch/3.0.0/fetch.js"></script>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script src="https://d3js.org/d3-collection.v1.min.js"></script>
+
+<div class = "container">
+	<header><div class="text-center">
+		  <h2>Your State and Nationwide Breakdown of CoronvaVirus cases and deaths</h3>
+		  <p><em>Updated Daily</em></p>
+		</div> 
+	</header>
+	
+	<main>
+ 
+		<div class="col-xs-12" >
+			<div style="height: 300px; width: 45%;display:inline-block;">
+				<canvas id="CoronaChartCountryCases"> </canvas> 
+			</div>
+			<div style="height: 300px; width: 45%;display:inline-block;"> 
+				<canvas id="CoronaChartCountryDeaths" ></canvas>
+			</div>
+		</div> 
+
+
+		<div class="col-xs-12" style="display: flex; flex-direction: row; justify-content: center; align-items: center">
+			<label for="state">State</label>
+			<select id="state" name="state"><option value="Alabama">Alabama</option><option value="Alaska">Alaska</option><option value="Arizona">Arizona</option><option value="Arkansas">Arkansas</option><option value="California">California</option><option value="Colorado">Colorado</option><option value="Connecticut">Connecticut</option><option value="Delaware">Delaware</option><option value="District of Columbia">District of Columbia</option><option value="Florida">Florida</option><option value="Georgia">Georgia</option><option value="Guam">Guam</option><option value="Hawaii">Hawaii</option><option value="Idaho">Idaho</option><option value="Illinois">Illinois</option><option value="Indiana">Indiana</option><option value="Iowa">Iowa</option><option value="Kansas">Kansas</option><option value="Kentucky">Kentucky</option><option value="Louisiana">Louisiana</option><option value="Maine">Maine</option><option value="Maryland">Maryland</option><option value="Massachusetts">Massachusetts</option><option value="Michigan">Michigan</option><option value="Minnesota">Minnesota</option><option value="Mississippi">Mississippi</option><option value="Missouri">Missouri</option><option value="Montana">Montana</option><option value="Nebraska">Nebraska</option><option value="Nevada">Nevada</option><option value="New Hampshire">New Hampshire</option><option value="New Jersey">New Jersey</option><option value="New Mexico">New Mexico</option><option value="New York">New York</option><option value="North Carolina">North Carolina</option><option value="North Dakota">North Dakota</option><option value="Northern Marianas Islands">Northern Marianas Islands</option><option value="Ohio">Ohio</option><option value="Oklahoma">Oklahoma</option><option value="Oregon">Oregon</option><option value="Pennsylvania">Pennsylvania</option><option value="Puerto Rico">Puerto Rico</option><option value="Rhode Island">Rhode Island</option><option value="South Carolina">South Carolina</option><option value="South Dakota">South Dakota</option><option value="Tennessee">Tennessee</option><option value="Texas">Texas</option><option value="Utah">Utah</option><option value="Vermont">Vermont</option><option value="Virginia">Virginia</option><option value="Virgin Islands">Virgin Islands</option><option value="Washington">Washington</option><option value="West Virginia">West Virginia</option><option value="Wisconsin">Wisconsin</option><option value="Wyoming">Wyoming</option></select>
+			<button class="button" align="center" style="margin: 20px; padding: 5px" onclick="chartStateCases(document.getElementById('state').value)">Display State Data</button>
+		</div>
+
+		<div class="col-xs-12" >
+				<div style="height: 300px; width: 45%;display:inline-block;"></> 
+					<canvas id="CoronaChartCTCases"> </canvas> 
+				</div>
+				<div style="height: 300px; width: 45%;display:inline-block;"> 
+					<canvas id="CoronaChartCTDeaths" ></canvas>
+				</div>
+		</div>
+		
+		<div id="regions_div"  class="col-xs-12" style="width: 900px; height: 500px;"></div>
+		
+	</main>
+	<aside>
+		<div class = "box">
+			
+			<div class = "sidePanel">
+				<h5>Total Cases in United States: </h3>
+				<p id = "caseus"> </p>
+			</div>
+			
+			<div class = "sidePanel">
+				<h5>Total Deaths in United States: </h3>
+				<p id = "deathus"> </p>
+			</div>
+			
+			<div class = "sidePanel">
+				<h5>Total Cases in State: </h3>
+				<p id = "casestate"> </p>
+				<!-- <p id = "state"> : </p> -->
+			</div>
+			
+			<div class = "sidePanel">
+				<h5>Total Deaths in State: </h3>
+				<p id = "deathstate"> </p>
+				<!-- <p id = "state"> : </p> -->
+			</div>
+		<div>
+	</aside>
+</div>
+ 
+<script>
+	var cases = [];
+	var deaths = [];
+	var days = [];
+	var xlabels=[1,2,3,4,5,6,7, 8,9, 10, 11, 12, 13, 14 , 15, 16, 17, 18, 19, 20, 21 , 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32];
+	var ytemps=[53, 80, 98, 164, 214, 279, 423, 647, 937, 1215, 1629, 1896, 2234, 3487, 4226, 7038, 10442, 15219, 18747, 24583, 33404,	44183, 54453, 68440, 85356, 103321, 122653,	140904,	163539,	186101,	213144,	239279];
+	var countryCases=[];
+	var countryDeaths=[];
+	var countryDays=[];
+	var state = "Alabama";
+
+	google.charts.load('current', {
+        'packages':['geochart'],
+        // Note: you will need to get a mapsApiKey for your project.
+        // See: https://developers.google.com/chart/interactive/docs/basic_load_libs#load-settings
+        'mapsApiKey': 'AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY'
+      });
+      google.charts.setOnLoadCallback(drawRegionsMap);
+
+      function drawRegionsMap() {
+        var data = google.visualization.arrayToDataTable([
+        ['State', 'Select'],
+          ['US-AL', 0],
+          ['US-AK', 0],
+          ['US-AR', 0],
+          ['US-AK', 0],
+          ['US-AZ', 0],
+          ['US-Colorado', 0],
+          ['US-CO', 0],
+          ['US-DE', 0],
+          ['US-FL', 0],
+          ['US-HI', 0],
+          ['US-KS', 0],
+          ['US-KY', 0],
+          ['US-MI', 0],
+          ['US-MO', 0],
+          ['US-MS', 0],
+          ['US-MT', 0],
+          ['US-NE', 0],
+          ['US-NJ', 0],
+          ['US-NM', 0],
+          ['US-NY', 1500],
+          ['US-OR', 0],
+          ['US-PA', 0],
+          ['US-TX', 0],
+          ['US-UT', 0],
+          ['US-VA', 0],
+          ['US-WA', 0],
+          ['US-WV', 0],
+          ['US-WY', 0],
+       ]);
+
+        var options = {
+          region: 'US',
+      		displayMode: 'regions',
+			resolution: 'provinces', 
+			backgroundColor: '#BEBEBE',
+        };
+
+        var chart = new google.visualization.GeoChart(document.getElementById('regions_div'));
+
+        chart.draw(data, options);
+      }
+	
+	<!-- getCountryData(); -->
+	window.onload = function () {
+	chartItCountryCases();
+	chartItCountryDeaths();
+	getData(state);
+	}
+	
+	function loadSidePanel(){
+		var caseus = '614246';
+		var deathus = '26064';
+		var casestate = cases[cases.length-1];
+		var deathstate = deaths[deaths.length-1];
+        document.getElementById('caseus').innerHTML = caseus;
+		document.getElementById('deathus').innerHTML = deathus;
+		document.getElementById('casestate').innerHTML = casestate; 
+		document.getElementById('deathstate').innerHTML = deathstate;  
+    };
+	
+	
+	function chartStateCases(state) {
+		getData(state); 
+	}
+	
+
+	function chartItCountryCases() {
+		var ctx = document.getElementById('CoronaChartCountryCases').getContext('2d');
+		var myChart = new Chart(ctx, {
+			type: 'line',
+			data: {
+				labels: xlabels,
+				datasets: [{
+				  label: 'Cases',
+				  data: ytemps,
+				  backgroundColor: "rgb(0,0,139)"
+				}]
+			},
+			options: {
+				title: {
+					display: true,
+					text: 'Total CoronaVirus Cases in the United States'
+				},
+				maintainAspectRatio: false,
+				responsive: true,
+				  scales: {
+					xAxes: [ {
+					ticks: {
+						autoSkip: true,
+						maxTicksLimit: 12
+					},
+					  display: true,
+					  scaleLabel: {
+						display: true,
+						labelString: 'Days since first case in the Country'
+					  },
+					} ],
+					yAxes: [ {
+					  display: true,
+					  scaleLabel: {
+						display: true,
+						labelString: 'Total Cases'
+						}
+							
+						} ]
+				    }
+			}
+		});
+		
+		myChart.update();
+	}
+	
+	function chartItCountryDeaths() {
+		var ctx = document.getElementById('CoronaChartCountryDeaths').getContext('2d');
+		var myChart = new Chart(ctx, {
+			type: 'line',
+			data: {
+				labels: xlabels,
+				datasets: [{
+				  label: 'Deaths',
+				  data: ytemps,
+				  backgroundColor: "rgb(0,0,139)"
+				}]
+			},
+			options: {
+				title: {
+					display: true,
+					text: 'Total CoronaVirus Deaths in the United States'
+				},
+				maintainAspectRatio: false,
+				responsive: true,
+				  scales: {
+					xAxes: [ {
+					ticks: {
+						autoSkip: true,
+						maxTicksLimit: 12
+					},
+					  display: true,
+					  scaleLabel: {
+						display: true,
+						labelString: 'Days since first case in the Country'
+					  },
+					} ],
+					yAxes: [ {
+					  display: true,
+					  scaleLabel: {
+						display: true,
+						labelString: 'Total Deaths'
+					  }
+							} ]
+						}
+			}
+		});
+		
+		myChart.update();
+	}
+
+	function chartItCTCases(cases, days) {
+		var ctx = document.getElementById('CoronaChartCTCases').getContext('2d');
+		var myChart = new Chart(ctx, {
+			type: 'line',
+			data: {
+				labels: days,
+				datasets: [{
+				  label: 'Cases',
+				  data: cases,
+				  backgroundColor: "rgb(207,181,59)"
+				}]
+			},
+			options: {
+				title: {
+					display: true,
+					text: 'Total CoronaVirus Cases in the State'
+				},
+				maintainAspectRatio: false,
+				responsive: true,
+				  scales: {
+					xAxes: [ {
+					ticks: {
+						autoSkip: true,
+						maxTicksLimit: 12
+					},
+					  display: true,
+					  scaleLabel: {
+						display: true,
+						labelString: 'Days since first case in the State'
+					  },
+					} ],
+					yAxes: [ {
+					  display: true,
+					  scaleLabel: {
+						display: true,
+						labelString: 'Total Cases in the state'
+					  }
+							} ]
+						}
+			}
+		});
+		
+		myChart.update();
+	}
+
+	function chartItCTDeaths(deaths, days) {
+		var ctx = document.getElementById('CoronaChartCTDeaths').getContext('2d');
+		var myChart = new Chart(ctx, {
+			type: 'line',
+			data: {
+			labels: days,
+			datasets: [{
+			  label: 'Deaths',
+			  data: deaths,
+			  backgroundColor: "rgb(207,181,59)"
+			}]
+		  },
+		  options: {
+				title: {
+					display: true,
+					text: 'Total CoronaVirus Deaths in the State'
+				},
+				responsive: true,
+				maintainAspectRatio: false,
+				  scales: {
+					xAxes: [ {
+					ticks: {
+						autoSkip: true,
+						maxTicksLimit: 12
+					},
+					  display: true,
+					  scaleLabel: {
+						display: true,
+						labelString: 'Days since first case in the State'
+					  },
+					} ],
+					yAxes: [ {
+					  display: true,
+					  scaleLabel: {
+						display: true,
+						labelString: 'Total Deaths in the state'
+					  }
+							} ]
+						}
+			}
+		});
+
+		myChart.update();
+	}
+
+	function printJSON (obj){
+		console.log(JSON.parse(obj));
+	}
+
+	function getData(state) { 
+		cases = [];
+		deaths = [];
+		days = [];
+		fetch('https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv')
+		.then((response) => {
+			return response.text(); 
+		})
+		.then((data) => {
+			const table = data.split('\n').slice(1);
+			curDay = 0;
+			printJSON(csvJSON(table));
+			var subSet = d3.nest()
+  				.key(function(d) { return d.date; })
+  				.rollup(function(v) { return d3.sum(v, function(d) { return d.cases; }); })
+				  .entries(table);
+			subSet.forEach((row => {
+					console.log(row.value);
+				}
+				));
+			table.forEach((row) => { 
+				const columns = row.split(','); 
+				if(columns[1]==state) {
+					cases.push(columns[3]);
+					deaths.push(columns[4]);
+					days.push(curDay++);
+				}	
+			});
+
+			
+
+			chartItCTCases(cases, days);
+			chartItCTDeaths(deaths, days);
+			loadSidePanel();
+		})
+
+	function csvJSON(lines){
+
+		var result = [];
+
+			// NOTE: If your columns contain commas in their values, you'll need
+			// to deal with those before doing the next step 
+			// (you might convert them to &&& or something, then covert them back later)
+			// jsfiddle showing the issue https://jsfiddle.net/
+		var headers=lines[0].split(",");
+
+			for(var i=1;i<lines.length;i++){
+
+				var obj = {};
+				var currentline=lines[i].split(",");
+
+				for(var j=0;j<headers.length;j++){
+					obj[headers[j]] = currentline[j];
+				}
+
+				result.push(obj);
+
+			}
+			//return result; //JavaScript object
+			return JSON.stringify(result); //JSON
+		}
+	
+	}
+	
+
+</script>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+</body>
+</html>
