@@ -250,6 +250,10 @@ select{
 	var countryDeaths=[];
 	var countryDays=[];
 	var state = "Alabama";
+	var caseUSChart = null;
+	var deathUSChart = null;
+	var caseStateChart = null;
+	var deathStateChart = null;
 	
 	<!-- getCountryData(); -->
 	window.onload = function () {
@@ -276,8 +280,11 @@ select{
 	
 
 	function chartItCountryCases() {
+		if(caseUSChart!=null){
+        	caseUSChart.destroy();
+    	}
 		var ctx = document.getElementById('CoronaChartCountryCases').getContext('2d');
-		var myChart = new Chart(ctx, {
+		caseUSChart = new Chart(ctx, {
 			type: 'bar',
 			data: {
 				labels: xlabels,
@@ -317,12 +324,15 @@ select{
 				    }
 			}
 		});
-		myChart.render();
+		caseUSChart.render();
 	}
 	
 	function chartItCountryDeaths() {
+		if(deathUSChart!=null){
+        	deathUSChart.destroy();
+    	}
 		var ctx = document.getElementById('CoronaChartCountryDeaths').getContext('2d');
-		var myChart = new Chart(ctx, {
+		deathUSChart = new Chart(ctx, {
 			type: 'bar',
 			data: {
 				labels: xlabels,
@@ -362,12 +372,16 @@ select{
 			}
 		});
 		
-		myChart.render();
+		deathUSChart.render();
 	}
 
 	function chartItCTCases(cases, days) {
+		
+		if(caseStateChart!=null){
+        	caseStateChart.destroy();
+    	}
 		var ctx = document.getElementById('CoronaChartCTCases').getContext('2d');
-		var myChart = new Chart(ctx, {
+			caseStateChart = new Chart(ctx, {
 			type: 'bar',
 			data: {
 				labels: days,
@@ -407,12 +421,15 @@ select{
 			}
 		});
 		
-		myChart.render();
+		caseStateChart.render();
 	}
 
 	function chartItCTDeaths(deaths, days) {
+		if(deathStateChart!=null){
+        	deathStateChart.destroy();
+    	}
 		var ctx = document.getElementById('CoronaChartCTDeaths').getContext('2d');
-		var myChart = new Chart(ctx, {
+		deathStateChart = new Chart(ctx, {
 			type: 'bar',
 			data: {
 			labels: days,
@@ -452,7 +469,7 @@ select{
 			}
 		});
 		
-		myChart.render();
+		deathStateChart.render();
 	}
 
 	function getData(state) { 
