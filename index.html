@@ -145,10 +145,13 @@ select{
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.bundle.min.js"></script>
 <script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/fetch/3.0.0/fetch.js"></script>
+<script src="http://code.jquery.com/jquery-3.3.1.slim.js" integrity="sha256-fNXJFIlca05BIO2Y5zh1xrShK3ME+/lYZ0j+ChxX2DA=" crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.15/lodash.core.min.js></script>
 
 <div class = "container">
 	<header><div class="text-center">
-		  <h2>Your State and Nationwide Breakdown of CoronvaVirus cases and deaths</h3>
+		  <h2>Covid-19 Nation and Statewide Stats</h3>
 		  <p><em>Updated Daily</em></p>
 		</div> 
 	</header>
@@ -244,8 +247,9 @@ select{
 	var cases = [];
 	var deaths = [];
 	var days = [];
-	var xlabels=[1,2,3,4,5,6,7, 8,9, 10, 11, 12, 13, 14 , 15, 16, 17, 18, 19, 20, 21 , 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32];
-	var ytemps=[53, 80, 98, 164, 214, 279, 423, 647, 937, 1215, 1629, 1896, 2234, 3487, 4226, 7038, 10442, 15219, 18747, 24583, 33404,	44183, 54453, 68440, 85356, 103321, 122653,	140904,	163539,	186101,	213144,	239279];
+	var nationDays=[];
+	var nationCases=[];
+	var nationDeaths=[];
 	var countryCases=[];
 	var countryDeaths=[];
 	var countryDays=[];
@@ -255,23 +259,17 @@ select{
 	var caseStateChart = null;
 	var deathStateChart = null;
 	
-	<!-- getCountryData(); -->
 	window.onload = function () {
-	chartItCountryCases();
-	chartItCountryDeaths();
+	displayCountryData();	
 	getData(state);
 	}
 	
 	function loadSidePanel(){
-		var caseus = '614246';
-		var deathus = '26064';
 		var casestate = cases[cases.length-1];
 		var deathstate = deaths[deaths.length-1];
-        document.getElementById('caseus').innerHTML = caseus;
-		document.getElementById('deathus').innerHTML = deathus;
 		document.getElementById('casestate').innerHTML = casestate; 
 		document.getElementById('deathstate').innerHTML = deathstate;  
-    };
+    }
 	
 	
 	function chartStateCases(state) {
@@ -287,10 +285,10 @@ select{
 		caseUSChart = new Chart(ctx, {
 			type: 'bar',
 			data: {
-				labels: xlabels,
+				labels: nationDays,
 				datasets: [{
 				  label: 'Cases',
-				  data: ytemps,
+				  data: nationCases,
 				  backgroundColor: "rgb(0,0,139)"
 				}]
 			},
@@ -335,10 +333,10 @@ select{
 		deathUSChart = new Chart(ctx, {
 			type: 'bar',
 			data: {
-				labels: xlabels,
+				labels: nationDays,
 				datasets: [{
 				  label: 'Deaths',
-				  data: ytemps,
+				  data: nationDeaths,
 				  backgroundColor: "rgb(0,0,139)"
 				}]
 			},
@@ -497,43 +495,76 @@ select{
 		})
 		
 	}
+
+	function csvToArray(csvString) {
+
+		// The array we're going to build
+		var csvArray = [];
+		// Break it into rows to start
+		var csvRows = csvString.split(/\n/);
+
+		// Take off the first line to get the headers, then split that into an array
+		var csvHeaders = csvRows.shift().split(',');
+
+		// Loop through remaining rows
+		for (var rowIndex = 0; rowIndex < csvRows.length; ++rowIndex) {
+			var rowArray = csvRows[rowIndex].split(',');
+
+			// Create a new row object to store our data.
+			var rowObject = csvArray[rowIndex] = {};
+
+			// Then iterate through the remaining properties and use the headers as keys
+			for (var propIndex = 0; propIndex < rowArray.length; ++propIndex) {
+				// Grab the value from the row array we're looping through...
+				var propValue = rowArray[propIndex];
+				// ...also grab the relevant header (the RegExp in both of these removes quotes)
+				var propLabel = csvHeaders[propIndex];
+
+				rowObject[propLabel] = propValue;
+			}
+		}
+
+		return csvArray;
+}
 	
-	<!-- function getCountryData() {  -->
-		<!-- countryCases=[]; -->
-		<!-- countryDeaths=[]; -->
-		<!-- countryDays=[]; -->
-		<!-- fetch('https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv') -->
-		<!-- .then((response) => { -->
-			<!-- return response.text();  -->
-		<!-- }) -->
-		<!-- .then((data) => { -->
-			<!-- const table = data.split('\n').slice(1); -->
-			<!-- var cases=0; -->
-			<!-- var deaths=0; -->
-			<!-- var curDay = 0; -->
-			<!-- table.forEach((row) => {  -->
-				<!-- const columns = row.split(','); -->
-				<!-- idx = row.index; -->
-				<!-- debugger; -->
-				<!-- var nextRow = row.parentNode.rows[++idx]; -->
-				<!-- debugger; -->
-				<!-- console.log(nextRow); -->
-				<!-- debugger; -->
-				<!-- var nextColumns = nextRow.split(','); -->
-				<!-- while(columns[0] != nextColumns.[0] && nextRow != null) { -->
-					<!-- cases+=columns[3]; -->
-					<!-- deaths+=coulmns[4]; -->
-					<!-- if(columns[0] != nextColumns.[0]){ -->
-						<!-- countryCases.push(cases); -->
-						<!-- contrydeaths.push(deaths); -->
-						<!-- curDay++; -->
-						<!-- countryDays.push(curDay++); -->
-					<!-- } -->
-					
-				<!-- } -->
-			<!-- }); -->
-		<!-- }); -->
-	<!-- } -->
+	function displayCountryData() {  
+
+		fetch('https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv')
+		.then((response) => {
+			return response.text(); 
+		})
+		.then((data) => {
+			var csvData = csvToArray(data);
+			const res = Object.values(csvData).reduce((acc, {date, cases, deaths}) => {
+				if (acc[date] !== undefined) {
+					acc[date].totalCases += (+cases);
+					acc[date].totalDeaths += (+deaths);
+					} 
+				else{
+					acc[date] = {date, totalCases: (+cases), totalDeaths: (+deaths)};
+					}
+
+				return acc;
+			}, {});
+			
+			var i = 0;
+			
+			for (var key in res) 
+			{
+				nationDays.push(i);
+				nationCases.push(res[key].totalCases);
+				nationDeaths.push(res[key].totalDeaths);
+				i++;
+			}
+			chartItCountryCases();
+			chartItCountryDeaths();
+			var caseus = nationCases[nationCases.length-1];
+			var deathus = nationDeaths[nationDeaths.length-1];
+			document.getElementById('caseus').innerHTML = caseus;
+			document.getElementById('deathus').innerHTML = deathus;
+		})
+	}
+		
 </script>
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
